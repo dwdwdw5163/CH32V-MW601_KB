@@ -1,0 +1,8 @@
+CompileFlags:
+  Add:
+    - "--sysroot=/home/zhang/MRS_Toolchain_Linux_x64_V1.91/RISC-V_Embedded_GCC/riscv-none-embed"
+    - "--target=riscv32"
+    - "-Wno-unused-parameter"
+  Remove:
+    - "-march=rv32imafc"
+    - "-mabi=ilp32f"
