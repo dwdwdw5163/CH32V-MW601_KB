@@ -1,15 +1,16 @@
 #include "ch32v30x.h"
 #include "ch32v30x_rcc.h"
-#include "ch32v30x_tim.h"
 #include "core_riscv.h"
 #include "debug.h"
 
 #include "ads8688.h"
 #include "rgb.h"
 
+
 #include "usbd_cdc.h"
 #include "usbd_core.h"
 #include <stdint.h>
+
 
 #define CONFIG_USB_HS
 
@@ -25,6 +26,9 @@
 
 /*!< config descriptor size */
 #define USB_CONFIG_SIZE (9 + CDC_ACM_DESCRIPTOR_LEN)
+
+uint16_t ads_data[8];
+
 
 /*!< global descriptor */
 static const uint8_t cdc_descriptor[] = {
@@ -199,10 +203,10 @@ int main(void) {
   RGB_Init();
   ADS8688_Init();
 
+  printf("SystemClk:%d\r\n", SystemCoreClock);
   // Everything is interrupt driven so just loop here
   while (1) {
-    extern uint16_t ads_data[8];
-    ADS_Read_All_Raw();
+    ADS_Read_All_Raw(ads_data);
     for(int i=0; i<8; i++) {
       
       printf("CH%d: %d\r\n", i, ads_data[i]);

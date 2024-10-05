@@ -1,4 +1,6 @@
-#include "debug.h"
+#ifndef _ADS8688_H_
+#define _ADS8688_H_
+
 #include "ch32v30x_gpio.h"
 #include "ch32v30x_rcc.h"
 #include "ch32v30x_spi.h"
@@ -10,6 +12,7 @@
 
 // ----------------------- ADS Commands and Registers ------------------------ //
 // Commands
+
 #define CONT 0x00				// continue operation in previous mode
 #define STBY 0x82				// device is placed into standby mode
 #define PWDN 0x83				// device is powered down
@@ -51,4 +54,6 @@
 #define CHNS_NUM_READ 8			// the number of channel you want to get the raw data (you also have to adjust the AUTO_SEQ_EN register value to match with the number of channel you like to read)
 
 void ADS8688_Init(void);
-void ADS_Read_All_Raw();
+void ADS_Read_All_Raw(uint16_t * data);
+
+#endif

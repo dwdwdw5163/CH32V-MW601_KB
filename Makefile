@@ -1,6 +1,6 @@
 TARGET_EXEC ?= MW601KB.elf
 
-PREFIX := /home/zhang/MRS_Toolchain_Linux_x64_V1.91/RISC-V_Embedded_GCC12/bin/
+PREFIX := /home/xinjie/ThirdParty/MRS_Toolchain_Linux_x64_V1.92/RISC-V_Embedded_GCC12/bin/
 
 AS := $(PREFIX)riscv-none-elf-gcc
 CC := $(PREFIX)riscv-none-elf-gcc
