@@ -1,7 +1,5 @@
 #include "ads8688.h"
-#include "ch32v30x_gpio.h"
-#include "ch32v30x_spi.h"
-#include "debug.h"
+
 
 #define USE_SOFT_SPI
 
@@ -142,17 +140,17 @@ uint16_t Soft_SPI_TransmitReceive(uint16_t tx_data) {
       MOSI_LOW();
     }
     tx_data <<= 1;
-    // Delay_Us(1);
+    //Delay_Us(1);
     SCK_LOW();
   }
-  Delay_Us(1);
+  //Delay_Us(1);
   for (int i = 0; i < 16; i++) {
     SCK_HIGH();
     rx_data <<= 1;
     if (MISO()) {
       rx_data++;
     }
-    // Delay_Us(1);
+    //Delay_Us(1);
     SCK_LOW();
   }
 
@@ -234,7 +232,6 @@ void ADS_Read_All_Raw(uint16_t * data) {
 
 void ADS8688_Init(void) {
   uint16_t ret;
-  extern uint8_t write_buffer[2048];
 
 #ifdef USE_SOFT_SPI
   Soft_SPI1_Init();

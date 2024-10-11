@@ -1,11 +1,8 @@
 #ifndef _ADS8688_H_
 #define _ADS8688_H_
 
-#include "ch32v30x_gpio.h"
-#include "ch32v30x_rcc.h"
-#include "ch32v30x_spi.h"
-#include "usbd_core.h"
-#include "usbd_cdc.h"
+#include "debug.h"
+
 
 // datasheet link
 // https://www.ti.com/lit/ds/symlink/ads8668.pdf?ts=1620233637463&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FADS8668
@@ -54,6 +51,7 @@
 #define CHNS_NUM_READ 8			// the number of channel you want to get the raw data (you also have to adjust the AUTO_SEQ_EN register value to match with the number of channel you like to read)
 
 void ADS8688_Init(void);
+void TMUX_Switch(uint32_t channel);
 void ADS_Read_All_Raw(uint16_t * data);
 
 #endif

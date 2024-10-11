@@ -1,9 +1,9 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : startup_ch32v30x_D8C.s
+* File Name          : startup_ch32v30x_D8.s
 * Author             : WCH
 * Version            : V1.0.1
 * Date               : 2024/03/06
-* Description        : CH32V307x-CH32V305x vector table for eclipse toolchain.
+* Description        : CH32V303x vector table for eclipse toolchain.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
@@ -79,7 +79,7 @@ _vector_base:
     .word   USART3_IRQHandler          /* USART3 */
     .word   EXTI15_10_IRQHandler       /* EXTI Line 15..10 */
     .word   RTCAlarm_IRQHandler        /* RTC Alarm through EXTI Line */
-    .word   USBWakeUp_IRQHandler       /* USB Wakeup from suspend */
+    .word   0
     .word   TIM8_BRK_IRQHandler        /* TIM8 Break */
     .word   TIM8_UP_IRQHandler         /* TIM8 Update */
     .word   TIM8_TRG_COM_IRQHandler    /* TIM8 Trigger and Commutation */
@@ -98,16 +98,16 @@ _vector_base:
     .word   DMA2_Channel3_IRQHandler   /* DMA2 Channel 3 */
     .word   DMA2_Channel4_IRQHandler   /* DMA2 Channel 4 */
     .word   DMA2_Channel5_IRQHandler   /* DMA2 Channel 5 */
-    .word   ETH_IRQHandler             /* ETH */
-    .word   ETH_WKUP_IRQHandler        /* ETH WakeUp */
-    .word   CAN2_TX_IRQHandler         /* CAN2 TX */
-    .word   CAN2_RX0_IRQHandler        /* CAN2 RX0 */
-    .word   CAN2_RX1_IRQHandler        /* CAN2 RX1 */
-    .word   CAN2_SCE_IRQHandler        /* CAN2 SCE */
-    .word   USBFS_IRQHandler           /* USBFS */
-    .word   USBHSWakeup_IRQHandler     /* USBHS Wakeup */
-    .word   USBHS_IRQHandler           /* USBHS */
-    .word   DVP_IRQHandler             /* DVP */
+    .word   0
+    .word   0
+    .word   0
+    .word   0
+    .word   0
+    .word   0
+    .word   USBFS_IRQHandler          /* USBFS */
+    .word   0
+    .word   0
+    .word   0
     .word   UART6_IRQHandler           /* UART6 */
     .word   UART7_IRQHandler           /* UART7 */
     .word   UART8_IRQHandler           /* UART8 */
@@ -177,7 +177,6 @@ _vector_base:
     .weak   USART3_IRQHandler          /* USART3 */
     .weak   EXTI15_10_IRQHandler       /* EXTI Line 15..10 */
     .weak   RTCAlarm_IRQHandler        /* RTC Alarm through EXTI Line */
-    .weak   USBWakeUp_IRQHandler       /* USB Wakeup from suspend */
     .weak   TIM8_BRK_IRQHandler        /* TIM8 Break */
     .weak   TIM8_UP_IRQHandler         /* TIM8 Update */
     .weak   TIM8_TRG_COM_IRQHandler    /* TIM8 Trigger and Commutation */
@@ -195,16 +194,7 @@ _vector_base:
     .weak   DMA2_Channel3_IRQHandler   /* DMA2 Channel 3 */
     .weak   DMA2_Channel4_IRQHandler   /* DMA2 Channel 4 */
     .weak   DMA2_Channel5_IRQHandler   /* DMA2 Channel 5 */
-    .weak   ETH_IRQHandler             /* ETH */
-    .weak   ETH_WKUP_IRQHandler        /* ETH WakeUp */
-    .weak   CAN2_TX_IRQHandler         /* CAN2 TX */
-    .weak   CAN2_RX0_IRQHandler        /* CAN2 RX0 */
-    .weak   CAN2_RX1_IRQHandler        /* CAN2 RX1 */
-    .weak   CAN2_SCE_IRQHandler        /* CAN2 SCE */
     .weak   USBFS_IRQHandler           /* USBFS */
-    .weak   USBHSWakeup_IRQHandler     /* USBHS Wakeup */
-    .weak   USBHS_IRQHandler           /* USBHS */
-    .weak   DVP_IRQHandler             /* DVP */
     .weak   UART6_IRQHandler           /* UART6 */
     .weak   UART7_IRQHandler           /* UART7 */
     .weak   UART8_IRQHandler           /* UART8 */
@@ -272,7 +262,6 @@ USART2_IRQHandler:
 USART3_IRQHandler:
 EXTI15_10_IRQHandler:
 RTCAlarm_IRQHandler:
-USBWakeUp_IRQHandler:
 TIM8_BRK_IRQHandler:
 TIM8_UP_IRQHandler:
 TIM8_TRG_COM_IRQHandler:
@@ -290,16 +279,7 @@ DMA2_Channel2_IRQHandler:
 DMA2_Channel3_IRQHandler:
 DMA2_Channel4_IRQHandler:
 DMA2_Channel5_IRQHandler:
-ETH_IRQHandler:
-ETH_WKUP_IRQHandler:
-CAN2_TX_IRQHandler:
-CAN2_RX0_IRQHandler:
-CAN2_RX1_IRQHandler:
-CAN2_SCE_IRQHandler:
 USBFS_IRQHandler:
-USBHSWakeup_IRQHandler:
-USBHS_IRQHandler:
-DVP_IRQHandler:
 UART6_IRQHandler:
 UART7_IRQHandler:
 UART8_IRQHandler:
@@ -324,12 +304,12 @@ DMA2_Channel11_IRQHandler:
 	.weak	handle_reset
 	.align	1
 handle_reset:
-.option push 
-.option	norelax 
+.option push
+.option	norelax
 	la gp, __global_pointer$
-.option	pop 
+.option	pop
 1:
-	la sp, _eusrstack 
+	la sp, _eusrstack
 2:
 /* Load data section from flash to RAM */
 	la a0, _data_lma
@@ -359,16 +339,18 @@ handle_reset:
 	li t0, 0x0b
 	csrw 0x804, t0
 /* Enable floating point and global interrupt, configure privileged mode */
-   	li t0, 0x6088           
+   	li t0, 0x6088
    	csrw mstatus, t0
 /* Configure the interrupt vector table recognition mode and entry address mode */
  	la t0, _vector_base
-    ori t0, t0, 3           
+    ori t0, t0, 3
 	csrw mtvec, t0
 
     jal  SystemInit
 	la t0, main
 	csrw mepc, t0
 	mret
+
+
 
 

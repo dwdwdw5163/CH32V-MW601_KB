@@ -4,8 +4,10 @@
 * Version            : V1.0.0
 * Date               : 2021/06/06
 * Description        : This file provides all the ADC firmware functions.
+*********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
-* SPDX-License-Identifier: Apache-2.0
+* Attention: This software (modified or not) and binary are used for 
+* microcontroller manufactured by Nanjing Qinheng Microelectronics.
 *******************************************************************************/
 #include "ch32v30x_adc.h"
 #include "ch32v30x_rcc.h"
@@ -1102,7 +1104,7 @@ s32 TempSensor_Volt_To_Temper(s32 Value)
     Refer_Volt = (s32)((*(u32 *)0x1FFFF720) & 0x0000FFFF);
     Refer_Temper = (s32)(((*(u32 *)0x1FFFF720) >> 16) & 0x0000FFFF);
 
-    Temper = Refer_Temper + ((Value - Refer_Volt) * 10 + (k >> 1)) / k;
+    Temper = Refer_Temper - ((Value - Refer_Volt) * 10 + (k >> 1)) / k;
 
     return Temper;
 }
@@ -1157,13 +1159,13 @@ int16_t Get_CalibrationValue(ADC_TypeDef *ADCx)
 
     for(i = 0; i < 10; i++)
     {
-        for(j = 0; j < 10; j++)
+        for(j = 0; j < 9; j++)
         {
             if(buf[j] > buf[j + 1])
             {
                 t = buf[j];
                 buf[j] = buf[j + 1];
-                buf[j] = t;
+                buf[j + 1] = t;
             }
         }
     }

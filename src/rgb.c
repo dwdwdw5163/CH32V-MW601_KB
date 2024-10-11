@@ -1,10 +1,8 @@
 #include "rgb.h"
-
-#include "ch32v30x_dma.h"
-#include "ch32v30x_tim.h"
-#include "core_riscv.h"
 #include "debug.h"
-#include <stdint.h>
+
+
+
 
 
 #define LIST_SIZE(list) (sizeof(list) / sizeof(list[0]))
@@ -52,29 +50,7 @@ void TIM1_Init(void) {
   TIM_Cmd(TIM1, ENABLE);
 }
 
-void TIM2_Init(uint16_t psc, uint16_t arr) {
-  TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure = {0};
 
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-  
-
-  TIM_TimeBaseInitStructure.TIM_Period = arr;
-  TIM_TimeBaseInitStructure.TIM_Prescaler = psc;
-  TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-  TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);
-
-  TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-  TIM_ARRPreloadConfig(TIM2, ENABLE);
-  TIM_Cmd(TIM2, ENABLE);
-
-  NVIC_InitTypeDef NVIC_InitStructure={0};
-  NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn ;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
-}
 
 void DMA1_Init(void) {
   DMA_InitTypeDef DMA_InitStructure = {0};
@@ -177,13 +153,12 @@ void RGB_Init(void) {
   uint16_t i = 0;
   // Turn off all LEDs
   for (i = 0; i < Pixel_NUM; i++) {
-    setPixelColor(i, 0, 0, 0);
+    setPixelColor(i, 0, 0x0f, 0);
   }
 
   TIM1_Init();
   DMA1_Init();
   DMA_Cmd(DMA1_Channel5, ENABLE);
-  TIM2_Init(100-1, 14400-1);
 }
 
 void DMA1_Channel5_IRQHandler(void)
@@ -196,16 +171,4 @@ void DMA1_Channel5_IRQHandler(void)
 }
 
 
-void TIM2_IRQHandler(void) {
-  TIM_ClearFlag(TIM2, TIM_FLAG_Update);
-  uint32_t color = color_list[rgb_i/64%7];
-  uint8_t r,g,b;
-  r = color >>16;
-  g = (color >>8)&0xff;
-  b = color&0xff;
-  setPixelColor(rgb_i%64,r,g,b);
-  
 
-  
-  rgb_i++;
-}

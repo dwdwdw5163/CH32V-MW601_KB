@@ -2,12 +2,14 @@
 * File Name          : ch32v30x_flash.h
 * Author             : WCH
 * Version            : V1.0.0
-* Date               : 2021/06/06
+* Date               : 2024/04/14
 * Description        : This file contains all the functions prototypes for the FLASH  
 *                      firmware library.
+*********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
-* SPDX-License-Identifier: Apache-2.0
-*******************************************************************************/ 
+* Attention: This software (modified or not) and binary are used for 
+* microcontroller manufactured by Nanjing Qinheng Microelectronics.
+*******************************************************************************/
 #ifndef __CH32V30x_FLASH_H
 #define __CH32V30x_FLASH_H
 
@@ -24,7 +26,11 @@ typedef enum
   FLASH_ERROR_PG,
   FLASH_ERROR_WRP,
   FLASH_COMPLETE,
-  FLASH_TIMEOUT
+  FLASH_TIMEOUT,
+  FLASH_FP_ERROR = 0xFC,
+  FLASH_OP_RANGE_ERROR = 0xFD,
+  FLASH_ALIGN_ERROR = 0xFE,
+  FLASH_ADR_RANGE_ERROR = 0xFF,
 }FLASH_Status;
 
 
@@ -85,18 +91,16 @@ typedef enum
 /* FLASH_Flags */	
 #define FLASH_FLAG_BSY                 ((uint32_t)0x00000001)  /* FLASH Busy flag */
 #define FLASH_FLAG_EOP                 ((uint32_t)0x00000020)  /* FLASH End of Operation flag */
-#define FLASH_FLAG_PGERR               ((uint32_t)0x00000004)  /* FLASH Program error flag */
 #define FLASH_FLAG_WRPRTERR            ((uint32_t)0x00000010)  /* FLASH Write protected error flag */
 #define FLASH_FLAG_OPTERR              ((uint32_t)0x00000001)  /* FLASH Option Byte error flag */
 
 #define FLASH_FLAG_BANK1_BSY                 FLASH_FLAG_BSY       /* FLASH BANK1 Busy flag*/
 #define FLASH_FLAG_BANK1_EOP                 FLASH_FLAG_EOP       /* FLASH BANK1 End of Operation flag */
-#define FLASH_FLAG_BANK1_PGERR               FLASH_FLAG_PGERR     /* FLASH BANK1 Program error flag */
 #define FLASH_FLAG_BANK1_WRPRTERR            FLASH_FLAG_WRPRTERR  /* FLASH BANK1 Write protected error flag */
 
-/* FLASH_Enhance_CLK */
-#define FLASH_Enhance_SYSTEM_HALF      ((uint32_t)0x00000000)   /* FLASH Enhance Clock = SYSTEM */
-#define FLASH_Enhance_SYSTEM           ((uint32_t)0x02000000)   /* Enhance_CLK = SYSTEM/2 */ 
+/* FLASH_Access_CLK */
+#define FLASH_Access_SYSTEM_HALF      ((uint32_t)0x00000000)   /* FLASH Access Clock = SYSTEM/2 */
+#define FLASH_Access_SYSTEM           ((uint32_t)0x02000000)   /* FLASH Access Clock = SYSTEM */
  
  
 /*Functions used for all devices*/
@@ -121,11 +125,12 @@ FLASH_Status FLASH_GetStatus(void);
 FLASH_Status FLASH_WaitForLastOperation(uint32_t Timeout);
 void FLASH_Unlock_Fast(void);
 void FLASH_Lock_Fast(void);
-void FLASH_ErasePage_Fast(uint32_t Page_Address);
+FLASH_Status FLASH_ErasePage_Fast(uint32_t Page_Address);
 void FLASH_EraseBlock_32K_Fast(uint32_t Block_Address);
 void FLASH_EraseBlock_64K_Fast(uint32_t Block_Address);
 void FLASH_ProgramPage_Fast(uint32_t Page_Address, uint32_t* pbuf);
-void FLASH_Enhance_Mode(uint32_t FLASH_Enhance_CLK, FunctionalState NewState);
+void FLASH_Access_Clock_Cfg(uint32_t FLASH_Access_CLK);
+void FLASH_Enhance_Mode(FunctionalState NewState);
 
 /* New function used for all devices */
 void FLASH_UnlockBank1(void);
@@ -133,6 +138,8 @@ void FLASH_LockBank1(void);
 FLASH_Status FLASH_EraseAllBank1Pages(void);
 FLASH_Status FLASH_GetBank1Status(void);
 FLASH_Status FLASH_WaitForLastBank1Operation(uint32_t Timeout);
+FLASH_Status FLASH_ROM_ERASE(uint32_t StartAddr, uint32_t Length);
+FLASH_Status FLASH_ROM_WRITE(uint32_t StartAddr, uint32_t *pbuf, uint32_t Length);
 
 #ifdef __cplusplus
 }

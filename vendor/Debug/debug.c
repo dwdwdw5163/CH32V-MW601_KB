@@ -5,13 +5,18 @@
 * Date               : 2021/06/06
 * Description        : This file contains all the functions prototypes for UART
 *                      Printf , Delay functions.
+*********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
-* SPDX-License-Identifier: Apache-2.0
+* Attention: This software (modified or not) and binary are used for 
+* microcontroller manufactured by Nanjing Qinheng Microelectronics.
 *******************************************************************************/
 #include "debug.h"
 
 static uint8_t  p_us = 0;
 static uint16_t p_ms = 0;
+
+#define DEBUG_DATA0_ADDRESS  ((volatile uint32_t*)0xE0000380)
+#define DEBUG_DATA1_ADDRESS  ((volatile uint32_t*)0xE0000384)
 
 /*********************************************************************
  * @fn      Delay_Init
@@ -43,7 +48,8 @@ void Delay_Us(uint32_t n)
     i = (uint32_t)n * p_us;
 
     SysTick->CMP = i;
-    SysTick->CTLR |= (1 << 4) | (1 << 5) | (1 << 0);
+    SysTick->CTLR |= (1 << 4);
+    SysTick->CTLR |= (1 << 5) | (1 << 0);
 
     while((SysTick->SR & (1 << 0)) != (1 << 0))
         ;
@@ -67,7 +73,8 @@ void Delay_Ms(uint32_t n)
     i = (uint32_t)n * p_ms;
 
     SysTick->CMP = i;
-    SysTick->CTLR |= (1 << 4) | (1 << 5) | (1 << 0);
+    SysTick->CTLR |= (1 << 4);
+    SysTick->CTLR |= (1 << 5) | (1 << 0);
 
     while((SysTick->SR & (1 << 0)) != (1 << 0))
         ;
@@ -138,37 +145,6 @@ void USART_Printf_Init(uint32_t baudrate)
 #endif
 }
 
-/*********************************************************************
- * @fn      _write
- *
- * @brief   Support Printf Function
- *
- * @param   *buf - UART send Data.
- *          size - Data length
- *
- * @return  size: Data length
- */
-
-/* __attribute__((used)) int _write(int fd, char *buf, int size) */
-/* { */
-/*     int i; */
-
-/*     for(i = 0; i < size; i++) */
-/*     { */
-/* #if(DEBUG == DEBUG_UART1) */
-/*         while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET); */
-/*         USART_SendData(USART1, *buf++); */
-/* #elif(DEBUG == DEBUG_UART2) */
-/*         while(USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET); */
-/*         USART_SendData(USART2, *buf++); */
-/* #elif(DEBUG == DEBUG_UART3) */
-/*         while(USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET); */
-/*         USART_SendData(USART3, *buf++); */
-/* #endif */
-/*     } */
-
-/*     return size; */
-/* } */
 
 /*********************************************************************
  * @fn      _sbrk
@@ -177,7 +153,7 @@ void USART_Printf_Init(uint32_t baudrate)
  *
  * @return  size: Data length
  */
-void *_sbrk(ptrdiff_t incr)
+__attribute__((used)) void *_sbrk(ptrdiff_t incr)
 {
     extern char _end[];
     extern char _heap_end[];

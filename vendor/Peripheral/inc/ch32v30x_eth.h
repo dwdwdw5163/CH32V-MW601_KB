@@ -5,8 +5,10 @@
 * Date               : 2021/06/06
 * Description        : This file contains all the functions prototypes for the
 *                      ETH firmware library.
+*********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
-* SPDX-License-Identifier: Apache-2.0
+* Attention: This software (modified or not) and binary are used for 
+* microcontroller manufactured by Nanjing Qinheng Microelectronics.
 *******************************************************************************/
 #ifndef __CH32V30x_ETH_H
 #define __CH32V30x_ETH_H
@@ -186,7 +188,7 @@ typedef struct {
 #define _eth_delay_    ETH_Delay       /* Default _eth_delay_ function with less precise timing */
 
 /* definition for Ethernet frame */
-#define ETH_MAX_PACKET_SIZE    1520    /* ETH_HEADER + ETH_EXTRA + MAX_ETH_PAYLOAD + ETH_CRC */
+#define ETH_MAX_PACKET_SIZE    1536    /* ETH_HEADER + ETH_EXTRA + MAX_ETH_PAYLOAD + ETH_CRC */
 #define ETH_HEADER               14    /* 6 byte Dest addr, 6 byte Src addr, 2 byte length/type */
 #define ETH_CRC                   4    /* Ethernet CRC */
 #define ETH_EXTRA                 2    /* Extra bytes in some cases */
@@ -198,7 +200,7 @@ typedef struct {
 /* ETH DMA structure definition */
 typedef struct
 {
-  uint32_t   Status;                /* Status */
+  uint32_t   volatile Status;       /* Status */
   uint32_t   ControlBufferSize;     /* Control and Buffer1, Buffer2 lengths */
   uint32_t   Buffer1Addr;           /* Buffer1 address pointer */
   uint32_t   Buffer2NextDescAddr;   /* Buffer2 or next descriptor address pointer */
@@ -317,10 +319,15 @@ typedef struct
 #define PHY_ConfigDelay                 ((uint32_t)0x00FFFFFF)
 
 /* PHY basic register */
-#define PHY_BCR                          0          /*PHY tranceiver Basic Control Register */
-#define PHY_BSR                          1          /*PHY tranceiver Basic Status Register */
+#define PHY_BCR                          0x0           /*PHY transceiver Basic Control Register */
+#define PHY_BSR                          0x01          /*PHY transceiver Basic Status Register*/
+#define PHY_ANAR                         0x04          /* Auto-Negotiation Advertisement Register */
+#define PHY_ANLPAR                       0x05          /* Auto-Negotiation Link Partner Base  Page Ability Register*/
+#define PHY_ANER                         0x06          /* Auto-Negotiation Expansion Register */
 #define PHY_BMCR                         PHY_BCR
 #define PHY_BMSR                         PHY_BSR
+#define PHY_STATUS                       0x10
+#define PHY_MDIX                         0x1E
 
 /* Bit or field definition for PHY basic control register */
 #define PHY_Reset                       ((uint16_t)0x8000)      /* PHY Reset */
@@ -948,9 +955,9 @@ Wake-UpFrame Filter Re7 : Filter3 CRC16 - Filter2 CRC16 */
 #define ETH_MACA3LR_MACA3L   ((unsigned int)0xFFFFFFFF)  /* MAC address3 low */
 
 /******************************************************************************/
-/*
-/*                          ETH MMC Register
-/*
+/*                                                                            */
+/*                          ETH MMC Register                                  */
+/*                                                                            */
 /******************************************************************************/
 #define ETH_MMCCR_MCFHP      ((unsigned int)0x00000020)  /* MMC counter Full-Half preset */
 #define ETH_MMCCR_MCP        ((unsigned int)0x00000010)  /* MMC counter preset */
@@ -989,9 +996,9 @@ Wake-UpFrame Filter Re7 : Filter3 CRC16 - Filter2 CRC16 */
 
 
 /******************************************************************************/
-/*
-/*                          ETH Precise Clock Protocol Register
-/*
+/*                                                                            */
+/*                          ETH Precise Clock Protocol Register               */
+/*                                                                            */
 /******************************************************************************/
 #define ETH_PTPTSCR_TSCNT       ((unsigned int)0x00030000)  /* Time stamp clock node type */
 #define ETH_PTPTSSR_TSSMRME     ((unsigned int)0x00008000)  /* Time stamp snapshot for message relevant to master enable */
@@ -1032,9 +1039,9 @@ Wake-UpFrame Filter Re7 : Filter3 CRC16 - Filter2 CRC16 */
 #define ETH_PTPTSSR_TSSO     ((unsigned int)0x00000010)  /* Time stamp seconds overflow */
 
 /******************************************************************************/
-/*
-/*                       ETH DMA Register
-/*
+/*                                                                            */
+/*                       ETH DMA Register                                     */
+/*                                                                            */
 /******************************************************************************/
 #define ETH_DMABMR_AAB       ((unsigned int)0x02000000)  /* Address-Aligned beats */
 #define ETH_DMABMR_FPM        ((unsigned int)0x01000000)  /* 4xPBL mode */
